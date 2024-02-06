@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("SteamWorkshop.API")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+d79f694613f9b9130922b394d31e354e61cfed24")]
 [assembly: System.Reflection.AssemblyProductAttribute("SteamWorkshop.API")]
 [assembly: System.Reflection.AssemblyTitleAttribute("SteamWorkshop.API")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
