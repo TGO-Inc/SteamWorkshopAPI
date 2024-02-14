@@ -17,10 +17,19 @@ namespace SteamWorkshop.WebAPI.IPublishedFileService
 
         private static T Request<T>(string query)
         {
-            var Results = new HttpClient().GetAsync(query).GetAwaiter().GetResult();
-            var Json = Results.Content.ReadAsStringAsync().GetAwaiter().GetResult();
-            return JsonConvert.DeserializeObject<T>(Json[12..^1])!;
+            try
+            {
+                var Results = new HttpClient().GetAsync(query).GetAwaiter().GetResult();
+                var Json = Results.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+                return JsonConvert.DeserializeObject<T>(Json[12..^1])!;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return default!;
+            }
         }
+
         private static T Post<T>(string query, FormUrlEncodedContent content)
         {
             var Results = new HttpClient().PostAsync(query, content).GetAwaiter().GetResult();
@@ -76,7 +85,7 @@ namespace SteamWorkshop.WebAPI.IPublishedFileService
                 else
                     ChallengePackIds.Add(Response._PublishedFileDetails);
 
-                //Console.WriteLine($"Downloaded: {ChallengePackIds.Count} / {Response.Total}");
+                // Console.WriteLine($"Downloaded: {ChallengePackIds.Count} / {Response.Total}");
             });
 
             Logger?.WriteLine($"[{this.GetType().FullName}]: Downloaded: {ChallengePackIds.Count} / {total}");
