@@ -23,7 +23,7 @@ namespace SteamWorkshop.WebAPI.IPublishedFileService
             public int? Result { get; set; }
 
             [JsonProperty("publishedfileid", NullValueHandling = NullValueHandling.Ignore)]
-            public string PublishedFileId { get; set; }
+            public string? PublishedFileId { get; set; }
 
             [JsonProperty("language", NullValueHandling = NullValueHandling.Ignore)]
             public int? Language { get; set; }
