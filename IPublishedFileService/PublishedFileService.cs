@@ -23,6 +23,11 @@ namespace SteamWorkshop.WebAPI.IPublishedFileService
                 var Json = Results.Content.ReadAsStringAsync().GetAwaiter().GetResult();
                 return JsonConvert.DeserializeObject<T>(Json[12..^1])!;
             }
+            catch (AggregateException e)
+            {
+                Console.WriteLine(e);
+                return default!;
+            }
             catch (Exception e)
             {
                 Console.WriteLine(e);
