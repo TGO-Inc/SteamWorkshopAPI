@@ -250,6 +250,7 @@ namespace SteamWorkshop.WebAPI.Internal
 
         private void Abort(bool sendLogOff = true)
         {
+            this.OnFailedToReconnect?.Invoke();
             this.Disconnect(sendLogOff);
         }
 
@@ -360,7 +361,7 @@ namespace SteamWorkshop.WebAPI.Internal
                     }
                     catch (Exception ex)
                     {
-                        this.Logger?.Error.WriteLine($"[{this.GetType().FullName}]: Failed to authenticate with Steam: " + ex.Message);
+                        this.Logger?.Error.WriteLine($"[{this.GetType().FullName}]: Failed to authenticate with Steam: " + ex.ToString());
                         this.OnFailedToReconnect?.Invoke();
                         this.Abort(false);
                         return;
@@ -378,7 +379,7 @@ namespace SteamWorkshop.WebAPI.Internal
             this.bDidDisconnect = true;
 
             this.Logger?.WriteLine(
-                $"{nameof(Steam3Session)}: Disconnected: bIsConnectionRecovery = {this.bIsConnectionRecovery}, UserInitiated = {disconnected.UserInitiated}, bExpectingDisconnectRemote = {this.bExpectingDisconnectRemote}");
+                $"[{this.GetType().FullName}]: Disconnected: bIsConnectionRecovery = {this.bIsConnectionRecovery}, UserInitiated = {disconnected.UserInitiated}, bExpectingDisconnectRemote = {this.bExpectingDisconnectRemote}");
 
             // When recovering the connection, we want to reconnect even if the remote disconnects us
             if (!this.bIsConnectionRecovery && (disconnected.UserInitiated || this.bExpectingDisconnectRemote))
@@ -497,7 +498,7 @@ namespace SteamWorkshop.WebAPI.Internal
 
             this.Logger?.WriteLine($"[{this.GetType().FullName}]: Logged In");
 
-            this.OnClientsLogin.Invoke(loggedOn);
+            this.OnClientsLogin?.Invoke(loggedOn);
 
             this.seq++;
             this.credentials.LoggedOn = true;
@@ -513,6 +514,7 @@ namespace SteamWorkshop.WebAPI.Internal
             if (licenseList.Result != EResult.OK)
             {
                 this.Logger?.WriteLine($"[{this.GetType().FullName}]: Unable to get license list: {licenseList.Result} ");
+                this.OnFailedToReconnect?.Invoke();
                 this.Abort();
 
                 return;
