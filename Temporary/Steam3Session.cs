@@ -76,6 +76,9 @@ namespace SteamWorkshop.WebAPI.Internal
         public delegate void OnClientDisconnect(SteamClient.DisconnectedCallback disconnect);
         public event OnClientDisconnect? OnClientsDisconnect;
 
+        public delegate void FailedToReconnect();
+        public event FailedToReconnect? OnFailedToReconnect;
+
         public readonly ConsoleManager? Logger;
 
         public Steam3Session(string username, string password, ConsoleManager Logger)
@@ -270,7 +273,7 @@ namespace SteamWorkshop.WebAPI.Internal
             }
         }
 
-        private void Reconnect()
+        public void Reconnect()
         {
             this.bIsConnectionRecovery = true;
             this.steamClient.Disconnect();
@@ -285,6 +288,7 @@ namespace SteamWorkshop.WebAPI.Internal
             if (diff > STEAM3_TIMEOUT && !this.bConnected)
             {
                 this.Logger?.WriteLine($"[{this.GetType().FullName}]: Timeout connecting to Steam3.");
+                this.OnFailedToReconnect?.Invoke();
                 Abort();
             }
         }
@@ -357,6 +361,7 @@ namespace SteamWorkshop.WebAPI.Internal
                     catch (Exception ex)
                     {
                         this.Logger?.Error.WriteLine($"[{this.GetType().FullName}]: Failed to authenticate with Steam: " + ex.Message);
+                        this.OnFailedToReconnect?.Invoke();
                         this.Abort(false);
                         return;
                     }
@@ -383,11 +388,13 @@ namespace SteamWorkshop.WebAPI.Internal
                 // Any operations outstanding need to be aborted
                 this.bAborted = true;
 
-                this.OnClientsDisconnect.Invoke(disconnected);
+                this.OnClientsDisconnect?.Invoke(disconnected);
+                this.OnFailedToReconnect?.Invoke();
             }
             else if (this.connectionBackoff >= 10)
             {
                 this.Logger?.WriteLine($"[{this.GetType().FullName}]: Could not connect to Steam after 10 tries");
+                this.OnFailedToReconnect?.Invoke();
                 this.Abort(false);
             }
             else if (!this.bAborted)
@@ -441,6 +448,7 @@ namespace SteamWorkshop.WebAPI.Internal
 
                     // TODO: Handle gracefully by falling back to password prompt?
                     this.Logger?.WriteLine($"[{this.GetType().FullName}]: Access token was rejected.");
+                    this.OnFailedToReconnect?.Invoke();
                     this.Abort(false);
                     return;
                 }
@@ -472,6 +480,7 @@ namespace SteamWorkshop.WebAPI.Internal
             if (loggedOn.Result == EResult.ServiceUnavailable)
             {
                 this.Logger?.WriteLine($"[{this.GetType().FullName}]: Unable to login to Steam3: {loggedOn.Result}");
+                this.OnFailedToReconnect?.Invoke();
                 this.Abort(false);
 
                 return;
@@ -480,6 +489,7 @@ namespace SteamWorkshop.WebAPI.Internal
             if (loggedOn.Result != EResult.OK)
             {
                 this.Logger?.WriteLine($"[{this.GetType().FullName}]: Unable to login to Steam3: {loggedOn.Result}");
+                this.OnFailedToReconnect?.Invoke();
                 this.Abort();
 
                 return;
