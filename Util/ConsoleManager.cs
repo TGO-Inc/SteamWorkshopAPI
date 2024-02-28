@@ -64,7 +64,7 @@ namespace SteamWorkshop.WebAPI.Managers
         public ConsoleManager(CancellationToken tok)
         {
             this.Token = tok;
-            this.LoggingTask = new Task(DoConsoleLog, Token, TaskCreationOptions.LongRunning);
+            this.LoggingTask = new Task(DoConsoleLog, this.Token, TaskCreationOptions.LongRunning);
 
             this.Colored = new ColorMessage();
             this.Colored.OnWrite += ColoredWrite;
