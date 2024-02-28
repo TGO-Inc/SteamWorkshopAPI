@@ -98,11 +98,11 @@ namespace SteamWorkshop.WebAPI.Managers
                 {
                     case IColorMessage cmsg:
                         if (cmsg.Color.HasValue) Console.ForegroundColor = cmsg.Color.Value;
-                        Console.WriteLine(cmsg.Message);
+                        Console.WriteLine($"[{DateTime.Now}] {cmsg.Message ?? "null"}");
                         Console.ResetColor();
                         break;
                     default:
-                        Console.WriteLine(msg);
+                        Console.WriteLine($"[{DateTime.Now}] {msg ?? "null"}");
                         break;
                 }
                 await Task.Delay(50);
