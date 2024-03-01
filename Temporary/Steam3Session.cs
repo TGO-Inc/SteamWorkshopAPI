@@ -277,7 +277,7 @@ namespace SteamWorkshop.WebAPI.Internal
         public void Reconnect()
         {
             this.bIsConnectionRecovery = true;
-            this.steamClient.Disconnect();
+            this.steamClient.Connect();
         }
 
         private void WaitForCallbacks()
