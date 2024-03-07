@@ -97,7 +97,8 @@ namespace SteamWorkshop.WebAPI.Managers
                 switch (msg)
                 {
                     case IColorMessage cmsg:
-                        if (cmsg.Color.HasValue) Console.ForegroundColor = cmsg.Color.Value;
+                        if (cmsg.Color is not null && cmsg.Color.HasValue)
+                            Console.ForegroundColor = cmsg.Color.Value;
                         Console.WriteLine($"[{DateTime.Now}] {cmsg.Message ?? "null"}");
                         Console.ResetColor();
                         break;
