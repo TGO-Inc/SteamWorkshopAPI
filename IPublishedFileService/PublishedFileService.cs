@@ -17,22 +17,22 @@ namespace SteamWorkshop.WebAPI.IPublishedFileService
 
         private static T Request<T>(string query)
         {
-            try
-            {
-                var Results = new HttpClient().GetAsync(query).GetAwaiter().GetResult();
-                var Json = Results.Content.ReadAsStringAsync().GetAwaiter().GetResult();
-                return JsonConvert.DeserializeObject<T>(Json[12..^1])!;
-            }
+            //try
+            //{
+            var Results = new HttpClient().GetAsync(query).GetAwaiter().GetResult();
+            var Json = Results.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+            return JsonConvert.DeserializeObject<T>(Json[12..^1])!;
+            /*}
             catch (AggregateException e)
             {
-                Console.WriteLine(e);
+                Console.WriteLine($"[{DateTime.Now}] {e}");
                 return default!;
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                Console.WriteLine($"[{DateTime.Now}] {e}");
                 return default!;
-            }
+            }*/
         }
 
         private static T Post<T>(string query, FormUrlEncodedContent content)
@@ -78,9 +78,6 @@ namespace SteamWorkshop.WebAPI.IPublishedFileService
             Parallel.For(1, (int)loop +1, (x, g) =>
             {
                 var Response = Request<PublishedFileDetailsQuery>($"{QueryString}{x}");
-
-                // ChallengePackIds ??= new(Response.Total, true);
-
                 if (Response._PublishedFileDetails is null) return;
 
                 if (old is not null)
@@ -89,8 +86,6 @@ namespace SteamWorkshop.WebAPI.IPublishedFileService
                         .Where(i => !old.Contains(i.PublishedFileId)));
                 else
                     ChallengePackIds.Add(Response._PublishedFileDetails);
-
-                // Console.WriteLine($"Downloaded: {ChallengePackIds.Count} / {Response.Total}");
             });
 
             Logger?.WriteLine($"[{this.GetType().FullName}]: Downloaded: {ChallengePackIds.Count} / {total}");

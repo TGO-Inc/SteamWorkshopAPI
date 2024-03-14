@@ -1,10 +1,29 @@
 ﻿using System.Collections.Concurrent;
+using System.Text;
 
 namespace SteamWorkshop.WebAPI.Managers
 {
+    public class TimestampedErrorWriter(TextWriter originalError) : TextWriter
+    {
+        private readonly TextWriter originalError = originalError;
+
+        public override Encoding Encoding => originalError.Encoding;
+
+        public override void Write(string? value)
+        {
+            originalError.Write($"{DateTime.Now}: {value ?? "null"}");
+        }
+
+        public override void WriteLine(string? value)
+        {
+            originalError.WriteLine($"{DateTime.Now}: {value ?? "null"}");
+        }
+    }
+
     public class ConsoleManager
     {
         public delegate void WriteColored(IColorMessage message);
+        
         public interface IColorMessage
         {
             public event WriteColored? OnWrite;
@@ -61,9 +80,14 @@ namespace SteamWorkshop.WebAPI.Managers
 
         public readonly IColorMessage Colored;
         public readonly IColorMessage Error;
+
         public ConsoleManager(CancellationToken tok)
         {
             this.Token = tok;
+
+            TextWriter originalError = Console.Error;
+            Console.SetError(new TimestampedErrorWriter(originalError));
+
             this.LoggingTask = new Task(DoConsoleLog, this.Token, TaskCreationOptions.LongRunning);
 
             this.Colored = new ColorMessage();
@@ -112,6 +136,7 @@ namespace SteamWorkshop.WebAPI.Managers
 
         public void StartOutput()
         {
+            // if (!this.LoggingTask.IsCompleted && !this.LoggingTask.IsCanceled)
             this.LoggingTask.Start();
         }
 
