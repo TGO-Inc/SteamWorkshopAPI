@@ -46,7 +46,7 @@ namespace SteamWorkshop.WebAPI.Internal
         private readonly SteamCloud steamCloud;
         private readonly SteamUnifiedMessages.UnifiedService<IPublishedFile> steamPublishedFile;
 
-        public readonly CallbackManager callbacks;
+        public CallbackManager callbacks;
 
         private readonly bool authenticatedUser;
         private bool bConnected;
@@ -124,7 +124,15 @@ namespace SteamWorkshop.WebAPI.Internal
             this.steamContent = this.steamClient.GetHandler<SteamContent>()!;
 
             this.callbacks = new CallbackManager(this.steamClient);
+            this.SubscribeAll();
 
+            this.SentryData = [];
+            this.ContentServerPenalty = new();
+            this.LoginTokens = [];
+        }
+
+        public void SubscribeAll()
+        {
             this.callbacks.Subscribe<SteamClient.ConnectedCallback>(ConnectedCallback);
             this.callbacks.Subscribe<SteamClient.DisconnectedCallback>(DisconnectedCallback);
             this.callbacks.Subscribe<SteamUser.LoggedOnCallback>(LogOnCallback);
@@ -132,10 +140,6 @@ namespace SteamWorkshop.WebAPI.Internal
             this.callbacks.Subscribe<SteamApps.LicenseListCallback>(LicenseListCallback);
             this.callbacks.Subscribe<SteamUser.UpdateMachineAuthCallback>(UpdateMachineAuthCallback);
             this.callbacks.Subscribe<SteamApps.PICSChangesCallback>(PICSChanged);
-
-            this.SentryData = [];
-            this.ContentServerPenalty = new();
-            this.LoginTokens = [];
         }
 
         private void PICSChanged(PICSChangesCallback callback)
