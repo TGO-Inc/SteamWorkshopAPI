@@ -7,12 +7,13 @@ using System.Threading.Tasks;
 
 namespace SteamWorkshop.WebAPI.Internal
 {
-    internal static class Extensions
+    public static class Extensions
     {
         public static void ForEach<T>(this IEnumerable<T> ie, Action<T, int> action)
         {
             var i = 0;
-            foreach (var e in ie) action(e, i++);
+            foreach (var e in ie)
+                action(e, i++);
         }
         public static void Add<T, G>(this List<KeyValuePair<T, G>> list, T itemA, G itemB)
         {

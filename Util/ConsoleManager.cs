@@ -118,16 +118,21 @@ namespace SteamWorkshop.WebAPI.Managers
             while (!(this.Token.IsCancellationRequested && this.IsWaitingForExit))
             while (this.MessageQueue.TryDequeue(out var msg))
             {
+                string fmsg;
                 switch (msg)
                 {
                     case IColorMessage cmsg:
                         if (cmsg.Color is not null && cmsg.Color.HasValue)
                             Console.ForegroundColor = cmsg.Color.Value;
-                        Console.WriteLine($"[{DateTime.Now}] {cmsg.Message ?? "null"}");
+                        fmsg = $"[{DateTime.Now}] {cmsg.Message ?? "null"}";
+                        Console.WriteLine(fmsg);
+                        File.AppendAllText("log.txt", fmsg+Environment.NewLine);
                         Console.ResetColor();
                         break;
                     default:
-                        Console.WriteLine($"[{DateTime.Now}] {msg ?? "null"}");
+                        fmsg = $"[{DateTime.Now}] {msg ?? "null"}";
+                        Console.WriteLine(fmsg);
+                        File.AppendAllText("log.txt", fmsg + Environment.NewLine);
                         break;
                 }
                 await Task.Delay(50);
