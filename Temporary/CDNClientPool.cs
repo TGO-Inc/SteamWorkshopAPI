@@ -29,10 +29,11 @@ namespace SteamWorkshop.WebAPI.Internal
             this.Logger = Logger;
             this.steamSession = steamSession;
             this.appId = appId;
+            this.ProxyServer = new();
             this.CDNClient = new Client(steamSession.steamClient);
 
             this.activeConnectionPool = new ConcurrentStack<Server>();
-            this.availableServerEndpoints = new BlockingCollection<Server>();
+            this.availableServerEndpoints = [];
 
             this.populatePoolEvent = new AutoResetEvent(true);
             this.shutdownToken = new CancellationTokenSource();
@@ -46,7 +47,7 @@ namespace SteamWorkshop.WebAPI.Internal
             this.monitorTask.Wait();
         }
 
-        private async Task<IReadOnlyCollection<Server>> FetchBootstrapServerListAsync()
+        private async Task<IReadOnlyCollection<Server>?> FetchBootstrapServerListAsync()
         {
             try
             {
@@ -83,7 +84,7 @@ namespace SteamWorkshop.WebAPI.Internal
                         return;
                     }
 
-                    this.ProxyServer = servers.Where(x => x.UseAsProxy).FirstOrDefault();
+                    this.ProxyServer = servers.Where(x => x.UseAsProxy).First();
 
                     var weightedCdnServers = servers
                         .Where(server =>
@@ -93,7 +94,7 @@ namespace SteamWorkshop.WebAPI.Internal
                         })
                         .Select(server =>
                         {
-                            this.steamSession.ContentServerPenalty.TryGetValue(server.Host, out var penalty);
+                            this.steamSession.ContentServerPenalty.TryGetValue(server.Host!, out var penalty);
 
                             return (server, penalty);
                         })

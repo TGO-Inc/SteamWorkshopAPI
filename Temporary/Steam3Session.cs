@@ -138,7 +138,7 @@ namespace SteamWorkshop.WebAPI.Internal
             this.callbacks.Subscribe<SteamUser.LoggedOnCallback>(LogOnCallback);
             this.callbacks.Subscribe<SteamUser.SessionTokenCallback>(SessionTokenCallback);
             this.callbacks.Subscribe<SteamApps.LicenseListCallback>(LicenseListCallback);
-            this.callbacks.Subscribe<SteamUser.UpdateMachineAuthCallback>(UpdateMachineAuthCallback);
+            // this.callbacks.Subscribe<SteamUser.UpdateMachineAuthCallback>(UpdateMachineAuthCallback);
             this.callbacks.Subscribe<SteamApps.PICSChangesCallback>(PICSChanged);
         }
 
@@ -536,6 +536,7 @@ namespace SteamWorkshop.WebAPI.Internal
             }
         }
 
+        /*
         private void UpdateMachineAuthCallback(SteamUser.UpdateMachineAuthCallback machineAuth)
         {
             var hash = SHA1.HashData(machineAuth.Data);
@@ -564,5 +565,6 @@ namespace SteamWorkshop.WebAPI.Internal
             // send off our response
             this.steamUser.SendMachineAuthResponse(authResponse);
         }
+        */
     }
 }

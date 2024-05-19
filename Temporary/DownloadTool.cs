@@ -30,7 +30,7 @@ namespace SteamWorkshop.WebAPI
             this.Steam3.RequestDepotKey(appid, appid);
         }
 
-        public DepotManifest DownloadManifest(uint depotid, uint appid, ulong manifestid)
+        public DepotManifest? DownloadManifest(uint depotid, uint appid, ulong manifestid)
         {
             for (int i = 0; i < 10; i++)
             {
@@ -56,7 +56,7 @@ namespace SteamWorkshop.WebAPI
                     continue;
                 }
             }
-            return null;
+            return default;
         }
         public byte[] DownloadFile(uint depotid, DepotManifest.ChunkData data)
         {

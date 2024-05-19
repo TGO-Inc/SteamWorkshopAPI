@@ -14,7 +14,7 @@ namespace SteamWorkshop.WebAPI.Internal
                 ConnectCallback = IPv4ConnectAsync
             });
 
-            var assemblyVersion = typeof(HttpClientFactory).Assembly.GetName().Version.ToString(fieldCount: 3);
+            var assemblyVersion = typeof(HttpClientFactory).Assembly.GetName().Version!.ToString(fieldCount: 3);
             client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("DepotDownloader", assemblyVersion));
 
             return client;

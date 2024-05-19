@@ -83,7 +83,7 @@ namespace SteamWorkshop.WebAPI.IPublishedFileService
                 if (old is not null)
                     ChallengePackIds.Add(
                         Response._PublishedFileDetails
-                        .Where(i => !old.Contains(i.PublishedFileId)));
+                        .Where(i => !old.Contains(i.PublishedFileId!)));
                 else
                     ChallengePackIds.Add(Response._PublishedFileDetails);
             });
@@ -107,7 +107,7 @@ namespace SteamWorkshop.WebAPI.IPublishedFileService
 
                 ChallengePackIds.ForEach((item, index) =>
                 {
-                    FormContent.Add($"publishedfileids[{index}]", item.PublishedFileId);
+                    FormContent.Add($"publishedfileids[{index}]", item.PublishedFileId!);
                 });
 
                 Logger?.WriteLine($"[{this.GetType().FullName}]: Downloading {ChallengePackIds.Count} file details...");
@@ -118,7 +118,7 @@ namespace SteamWorkshop.WebAPI.IPublishedFileService
 
             ManagedArray<string> output = new(ChallengePackIds.Count + @new.Length)
             {
-                ChallengePackIds.Select(i => i.PublishedFileId).ToArray(),
+                ChallengePackIds.Select(i => i.PublishedFileId!).ToArray(),
                 @new
             };
 
@@ -128,7 +128,7 @@ namespace SteamWorkshop.WebAPI.IPublishedFileService
             {
                 var jsonstring = File.ReadAllText(Path.Combine("challenges",".challenge.data"));
                 var old_results = JsonConvert.DeserializeObject<ISteamRemoteStorage.PublishedFileDetailsQuery>(jsonstring);
-                Results = new(Results.Result, Results.ResultCount + old_results.ResultCount,
+                Results = new(Results.Result, Results.ResultCount + old_results!.ResultCount,
                     [.. old_results._PublishedFileDetails, .. Results._PublishedFileDetails]);
             }
 
