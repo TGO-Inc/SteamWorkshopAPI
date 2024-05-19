@@ -1,6 +1,5 @@
 using System.Collections.Concurrent;
 using System.Collections.ObjectModel;
-using System.Security.Cryptography;
 using SteamKit2;
 using SteamKit2.Authentication;
 using SteamKit2.Internal;

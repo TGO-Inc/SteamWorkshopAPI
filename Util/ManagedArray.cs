@@ -1,7 +1,5 @@
-﻿using Newtonsoft.Json;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Concurrent;
-using System.Threading;
 
 namespace SteamWorkshop.WebAPI.Internal
 {

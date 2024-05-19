@@ -1,5 +1,4 @@
 ﻿using Newtonsoft.Json;
-using System;
 using static SteamWorkshop.WebAPI.ISteamRemoteStorage.PublishedFileDetailsQuery;
 
 namespace SteamWorkshop.WebAPI.ISteamRemoteStorage

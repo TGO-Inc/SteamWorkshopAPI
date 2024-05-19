@@ -1,9 +1,6 @@
 ﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using SteamWorkshop.WebAPI.Internal;
-using SteamWorkshop.WebAPI.ISteamRemoteStorage;
 using SteamWorkshop.WebAPI.Managers;
-using System.Linq;
 using System.Text;
 
 namespace SteamWorkshop.WebAPI.IPublishedFileService
