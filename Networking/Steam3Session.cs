@@ -79,14 +79,14 @@ public class Steam3Session
 
     public readonly ConsoleManager? Logger;
 
-    public Steam3Session(string username, string password, ConsoleManager Logger)
+    public Steam3Session(string username, string password, ConsoleManager logger)
         : this(new SteamUser.LogOnDetails()
         {
             Username = username,
             Password = password,
             ShouldRememberPassword = true,
             LoginID = 0x534B32
-        }) => this.Logger = Logger;
+        }) => this.Logger = logger;
 
     public Steam3Session(SteamUser.LogOnDetails details)
     {
@@ -346,7 +346,7 @@ public class Steam3Session
             }
             catch (Exception ex)
             {
-                this.Logger?.Error.WriteLine($"[{this.GetType().FullName}]: Failed to authenticate with Steam: " + ex.ToString());
+                this.Logger?.Error.WriteLine($"[{this.GetType().FullName}]: Failed to authenticate with Steam: " + ex);
                 this.OnFailedToReconnect?.Invoke();
                 this.Abort(false);
                 return;
