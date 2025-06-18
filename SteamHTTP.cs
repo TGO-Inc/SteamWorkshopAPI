@@ -1,7 +1,6 @@
-﻿namespace SteamWorkshop.WebAPI
+﻿namespace SteamWorkshop.WebAPI;
+
+public class SteamHTTP(char[] key)
 {
-    public class SteamHTTP(char[] key)
-    {
-        internal string RequestKey() => $"?key={new string(key)}";
-    }
+    internal string RequestKey() => $"?key={new string(key)}";
 }
