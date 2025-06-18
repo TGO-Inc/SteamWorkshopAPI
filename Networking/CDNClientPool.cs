@@ -24,9 +24,9 @@ internal class CDNClientPool
     private readonly CancellationTokenSource _shutdownToken;
     private readonly ConsoleManager? _logger;
 
-    public CDNClientPool(Steam3Session steamSession, uint appId, ConsoleManager? Logger)
+    public CDNClientPool(Steam3Session steamSession, uint appId, ConsoleManager? logger)
     {
-        this._logger = Logger;
+        this._logger = logger;
         this._steamSession = steamSession;
         this._appId = appId;
         this.ProxyServer = new Server();
