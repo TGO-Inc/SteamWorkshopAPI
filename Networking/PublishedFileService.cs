@@ -5,7 +5,7 @@ using System.Text;
 
 namespace SteamWorkshop.WebAPI.IPublishedFileService;
 
-public class PublishedFileService(char[] key, ConsoleManager? Logger = null) : SteamHTTP(key)
+public class PublishedFileService(char[] key, ConsoleManager? logger = null) : SteamHTTP(key)
 {
     private const string UGetPublishedFileDetails = "https://api.steampowered.com/ISteamRemoteStorage/GetPublishedFileDetails/v1/";
     private const string UQueryFiles = "https://api.steampowered.com/IPublishedFileService/QueryFiles/v1/";
@@ -42,7 +42,7 @@ public class PublishedFileService(char[] key, ConsoleManager? Logger = null) : S
         StringBuilder queryString = new();
 
         queryString.Append(UQueryFiles);
-        queryString.Append(base.RequestKey());
+        queryString.Append(this.Key);
 
         queryString.Append("&query_type=");
         queryString.Append(query.QueryType);
@@ -55,9 +55,8 @@ public class PublishedFileService(char[] key, ConsoleManager? Logger = null) : S
         queryString.Append("&page=");
 
         Directory.CreateDirectory("challenges");
-        Logger?.WriteLine($"[{this.GetType().FullName}]: Downloading challenge mode steam_ids...");
+        logger?.WriteLine($"[{this.GetType().FullName}]: Downloading challenge mode steam_ids...");
 
-        List<PublishedFileDetailsQuery.PublishedFileDetails> list = [];
         List<string>? old = null;
             
         if (File.Exists(Path.Combine("challenges",".steam.ids")))
@@ -81,7 +80,7 @@ public class PublishedFileService(char[] key, ConsoleManager? Logger = null) : S
                 publishedFiles.Add(response._PublishedFileDetails);
         });
 
-        Logger?.WriteLine($"[{this.GetType().FullName}]: Downloaded: {publishedFiles.Count} / {total}");
+        logger?.WriteLine($"[{this.GetType().FullName}]: Downloaded: {publishedFiles.Count} / {total}");
 
         var results = new ISteamRemoteStorage.PublishedFileDetailsQuery(1, 0, []);
 
@@ -89,7 +88,7 @@ public class PublishedFileService(char[] key, ConsoleManager? Logger = null) : S
         {
             StringBuilder itemDetailsQuery = new();
             itemDetailsQuery.Append(UGetPublishedFileDetails);
-            itemDetailsQuery.Append(base.RequestKey());
+            itemDetailsQuery.Append(this.Key);
 
             List<KeyValuePair<string, string>> formContent = new()
             {
@@ -98,7 +97,7 @@ public class PublishedFileService(char[] key, ConsoleManager? Logger = null) : S
 
             publishedFiles.ForEach((item, index) => formContent.Add($"publishedfileids[{index}]", item.PublishedFileId!));
 
-            Logger?.WriteLine($"[{this.GetType().FullName}]: Downloading {publishedFiles.Count} file details...");
+            logger?.WriteLine($"[{this.GetType().FullName}]: Downloading {publishedFiles.Count} file details...");
             results = Post<ISteamRemoteStorage.PublishedFileDetailsQuery>(
                 itemDetailsQuery.ToString(), new FormUrlEncodedContent(formContent));
         }
@@ -111,24 +110,5 @@ public class PublishedFileService(char[] key, ConsoleManager? Logger = null) : S
         };
 
         return new QueryResponse { SteamIDs = output.ToArray(), Results = results, PublishedFileDetails = publishedFiles.ToArray(), Total = total };
-        
-        File.WriteAllText(Path.Combine("challenges",".steam.ids"), JsonConvert.SerializeObject(output.ToArray(), Formatting.Indented));
-            
-        if (File.Exists(Path.Combine("challenges",".challenge.data")))
-        {
-            string jsonString = File.ReadAllText(Path.Combine("challenges",".challenge.data"));
-            var oldResults = JsonConvert.DeserializeObject<ISteamRemoteStorage.PublishedFileDetailsQuery>(jsonString);
-            results = new ISteamRemoteStorage.PublishedFileDetailsQuery(results.Result, results.ResultCount + oldResults!.ResultCount,
-                [.. oldResults._PublishedFileDetails, .. results._PublishedFileDetails]);
-        }
-
-        File.WriteAllText(Path.Combine("challenges",".challenge.data"), JsonConvert.SerializeObject(results, Formatting.Indented));
-        if (publishedFiles.Count < total && publishedFiles.Count > 0) {
-            Logger?.WriteLine($"[{this.GetType().FullName}]: Downloaded/Collected SOME...? file details");
-            // return (results, true);
-        }
-
-        Logger?.WriteLine($"[{this.GetType().FullName}]: Downloaded/Collected all file details");
-        // return (results, false);
     }
 }

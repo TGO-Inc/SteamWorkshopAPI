@@ -2,5 +2,5 @@
 
 public class SteamHTTP(char[] key)
 {
-    internal string RequestKey() => $"?key={new string(key)}";
+    internal string Key => $"?key={new string(key)}";
 }
